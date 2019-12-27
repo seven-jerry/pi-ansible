@@ -1,0 +1,9 @@
+[control]
+localhost
+
+[pi]
+#hall.local
+bath.local local_folder=bath
+#eating.local
+#living.local
+#bathhall.local

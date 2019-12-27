@@ -1,0 +1,34 @@
+---
+ - hosts: pi
+   remote_user: pi
+   become: true
+   tasks:
+   - name: sync node red
+     synchronize:
+       dest: ./{{local_folder}}/nodered 
+       src: /root/.node-red
+       mode: pull
+
+   - name: sync arduini script
+     synchronize:
+       dest: ./{{local_folder}}/arduino 
+       src: /home/pi/arduino/
+       mode: pull
+
+   - name: sync lightcontrol config
+     synchronize:
+       dest: ./{{local_folder}}/lightcontrol-config 
+       src: /home/pi/lightcontrol-config/
+       mode: pull
+
+   - name: sync autostart config
+     synchronize:
+       src: ./{{local_folder}}/autostart/autostart 
+       dest: /home/pi/.config/lxsession/LXDE-pi/autostart
+       mode: push
+
+   - name: sync manage folder
+     synchronize:
+       src: ./{{local_folder}}/manage/
+       dest: /home/pi/manage/
+       mode: push

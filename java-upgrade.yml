@@ -1,0 +1,42 @@
+---
+
+
+- hosts: pi
+  become: true
+  remote_user: pi
+  
+  vars:
+   - version: 11.0.2
+   - version_path: 11
+
+  tasks:
+   - name: check if file exists
+     stat:
+       path: /tmp/new_java_version.{{version}}.deb
+     register: stat_result
+
+   - name: getting new java version
+     get_url: 
+       url: https://github.com/bell-sw/Liberica/releases/download/{{version}}/bellsoft-jdk11.0.2-linux-arm32-vfp-hflt.deb
+       dest: /tmp/new_java_version.{{version}}.deb
+     when: stat_result.stat.exists == False 
+
+   - name: installing new java version
+     apt:
+       deb: /tmp/new_java_version.{{version}}.deb
+   - name: setting alternatives for javac
+     alternatives:
+       name: javac
+       path: /usr/lib/jvm/jdk-{{version_path}}-bellsoft-arm32-vfp-hflt/bin/javac
+
+   - name: setting alternatives for java
+     alternatives:
+       name: java
+       path: /usr/lib/jvm/jdk-{{version_path}}-bellsoft-arm32-vfp-hflt/bin/java
+
+   - name: Fetch Java version
+     shell: java -version 2>&1 | grep version | awk '{print $3}' | sed 's/"//g'
+     register: java_version
+   - debug:
+      msg: 
+       - java version is {{java_version.stdout_lines}}

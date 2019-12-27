@@ -1,0 +1,23 @@
+---
+ - hosts: pi
+   vars:
+    - version: 1.4.2
+
+   remote_user: pi
+   become: true
+
+   tasks:
+   - name: check if artifact is installed
+     local_action: stat path=/var/data/artifacts/jerryhome/lightcontrol/{{version}}/lightcontrol-{{version}}.jar
+     register: stat_result
+
+   - fail:
+     when: stat_result.stat.exists == False
+
+   - name: upload jar
+     copy:
+      src: /var/data/artifacts/jerryhome/lightcontrol/{{version}}/lightcontrol-{{version}}.jar
+      dest: /home/pi/src/lightcontrol/lightcontrol-{{version}}.jar
+   
+   - name: change version in config
+     shell: echo "#!/bin/sh \nexport version={{version}}\n" > /home/pi/src/lightcontrol-version.sh

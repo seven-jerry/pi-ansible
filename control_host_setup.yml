@@ -1,0 +1,24 @@
+---
+ - hosts: control
+   become: true
+   tasks:
+   - name: load ftp server
+     apt:
+      name: vsftpd
+
+   - name: copy config file
+     copy:
+       src: ./control/vsftpd.conf
+       dest: /etc/vsftpd.conf
+
+   - name: restart ftp server
+     systemd:
+       name: vsftpd
+       state: restarted
+
+   - name: Create a directory if it does not exist
+     file:
+      path: /var/data/artifacts
+      state: directory
+      mode: '0777'
+
